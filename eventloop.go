@@ -7,6 +7,8 @@ import (
 	"github.com/kneu-messenger-pigeon/events"
 	"github.com/segmentio/kafka-go"
 	"io"
+	"os/signal"
+	"syscall"
 )
 
 type EventLoop struct {
@@ -17,10 +19,13 @@ type EventLoop struct {
 }
 
 func (eventLoop EventLoop) execute() (err error) {
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	defer stop()
+
 	var event events.SecondaryDbLessonProcessedEvent
 	var m kafka.Message
 	for err == nil {
-		m, err = eventLoop.reader.FetchMessage(context.Background())
+		m, err = eventLoop.reader.FetchMessage(ctx)
 
 		if err == nil && string(m.Key) == events.SecondaryDbLessonProcessedEventName {
 			_ = json.Unmarshal(m.Value, &event)

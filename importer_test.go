@@ -29,6 +29,7 @@ func TestImporterExecute(t *testing.T) {
 	var event events.ScoreEvent
 	var matchContext = mock.MatchedBy(func(ctx context.Context) bool { return true })
 	var expectedError = errors.New("expected test error")
+	var year = 2030
 
 	t.Run("valid scores", func(t *testing.T) {
 		startDatetime = time.Date(2023, 3, 4, 4, 0, 0, 0, time.Local)
@@ -59,6 +60,7 @@ func TestImporterExecute(t *testing.T) {
 				LessonId:     uint(rand.Intn(1000) + 1),
 				LessonPart:   uint8(rand.Intn(1) + 1),
 				DisciplineId: 99,
+				Year:         year,
 				Semester:     uint8(rand.Intn(2) + 1),
 				IsAbsent:     false,
 				IsDeleted:    i%7 == 3,
@@ -129,7 +131,7 @@ func TestImporterExecute(t *testing.T) {
 			chunkInterval:  time.Hour * 8,
 		}
 
-		err = importer.execute(startDatetime, endDatetime)
+		err = importer.execute(startDatetime, endDatetime, year)
 
 		assert.NoError(t, err)
 
@@ -168,7 +170,7 @@ func TestImporterExecute(t *testing.T) {
 			chunkInterval:  time.Hour * 8,
 		}
 
-		err = importer.execute(startDatetime, endDatetime)
+		err = importer.execute(startDatetime, endDatetime, year)
 
 		assert.Error(t, err)
 		assert.Equal(t, expectedError, err)
@@ -231,7 +233,7 @@ func TestImporterExecute(t *testing.T) {
 			chunkInterval:  time.Hour * 8,
 		}
 
-		err = importer.execute(startDatetime, endDatetime)
+		err = importer.execute(startDatetime, endDatetime, year)
 
 		assert.Error(t, err)
 		assert.ErrorIs(t, expectedError, err)
@@ -283,7 +285,7 @@ func TestImporterExecute(t *testing.T) {
 			chunkInterval:  time.Hour * 8,
 		}
 
-		err = importer.execute(startDatetime, endDatetime)
+		err = importer.execute(startDatetime, endDatetime, year)
 
 		assert.Error(t, err)
 		assert.Equal(t, expectedError, err)
@@ -309,7 +311,7 @@ func TestImporterExecute(t *testing.T) {
 			chunkInterval:  time.Hour * 8,
 		}
 
-		err := importer.execute(startDatetime, endDatetime)
+		err := importer.execute(startDatetime, endDatetime, year)
 
 		assert.Error(t, err)
 		assert.Equal(t, expectedErr, err)

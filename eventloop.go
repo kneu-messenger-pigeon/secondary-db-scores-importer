@@ -37,6 +37,7 @@ func (eventLoop EventLoop) execute() (err error) {
 
 			err = eventLoop.importer.execute(
 				event.PreviousSecondaryDatabaseDatetime, event.CurrentSecondaryDatabaseDatetime,
+				event.Year,
 			)
 
 			fmt.Fprintf(

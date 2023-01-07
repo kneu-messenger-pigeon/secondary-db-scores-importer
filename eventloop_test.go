@@ -22,10 +22,12 @@ func TestEventLoopExecute(t *testing.T) {
 
 	expectedStartDatetime := time.Date(2023, 4, 10, 4, 0, 0, 0, time.UTC)
 	expectedEndDatetime := time.Date(2023, 4, 11, 4, 0, 0, 0, time.UTC)
+	expectedYear := 2030
 
 	event := events.SecondaryDbLessonProcessedEvent{
 		PreviousSecondaryDatabaseDatetime: expectedStartDatetime,
 		CurrentSecondaryDatabaseDatetime:  expectedEndDatetime,
+		Year:                              expectedYear,
 	}
 
 	payload, _ := json.Marshal(event)
@@ -44,7 +46,7 @@ func TestEventLoopExecute(t *testing.T) {
 		reader.On("CommitMessages", matchContext, message).Return(nil)
 
 		importer := NewMockImporterInterface(t)
-		importer.On("execute", expectedStartDatetime, expectedEndDatetime).Return(nil)
+		importer.On("execute", expectedStartDatetime, expectedEndDatetime, expectedYear).Return(nil)
 
 		eventLoop := EventLoop{
 			out:          &out,
@@ -72,7 +74,7 @@ func TestEventLoopExecute(t *testing.T) {
 		reader.On("CommitMessages", matchContext, message).Return(expectedError)
 
 		importer := NewMockImporterInterface(t)
-		importer.On("execute", expectedStartDatetime, expectedEndDatetime).Return(nil)
+		importer.On("execute", expectedStartDatetime, expectedEndDatetime, expectedYear).Return(nil)
 
 		eventLoop := EventLoop{
 			out:          &out,
@@ -101,7 +103,7 @@ func TestEventLoopExecute(t *testing.T) {
 		reader.On("FetchMessage", matchContext).Return(message, nil).Once()
 
 		importer := NewMockImporterInterface(t)
-		importer.On("execute", expectedStartDatetime, expectedEndDatetime).Return(expectedError)
+		importer.On("execute", expectedStartDatetime, expectedEndDatetime, expectedYear).Return(expectedError)
 
 		eventLoop := EventLoop{
 			out:          &out,

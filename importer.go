@@ -21,6 +21,7 @@ type ScoresImporter struct {
 	workerPoolSize int
 	queue          chan ImportTask
 	queueError     chan error
+	year           int
 }
 
 type ImportTask struct {
@@ -37,12 +38,14 @@ FROM T_EV_9
 WHERE  REGDATE BETWEEN ? AND ?
 ORDER BY ID DESC`
 
-func (importer ScoresImporter) execute(startDatetime time.Time, endDatetime time.Time) (err error) {
+func (importer *ScoresImporter) execute(startDatetime time.Time, endDatetime time.Time, year int) (err error) {
 	if err = importer.db.Ping(); err != nil {
 		return
 	}
 
 	startedAt := time.Now()
+
+	importer.year = year
 
 	importer.queueError = make(chan error)
 	importer.queue = make(chan ImportTask)
@@ -60,7 +63,7 @@ func (importer ScoresImporter) execute(startDatetime time.Time, endDatetime time
 	return
 }
 
-func (importer ScoresImporter) prepareImportTaskQueue(startDatetime time.Time, endDatetime time.Time) {
+func (importer *ScoresImporter) prepareImportTaskQueue(startDatetime time.Time, endDatetime time.Time) {
 	chunkEndDatetime := endDatetime
 	var chunkStartDatetime time.Time
 
@@ -80,7 +83,7 @@ func (importer ScoresImporter) prepareImportTaskQueue(startDatetime time.Time, e
 	close(importer.queue)
 }
 
-func (importer ScoresImporter) runWorkerPool() {
+func (importer *ScoresImporter) runWorkerPool() {
 	waitGroup := &sync.WaitGroup{}
 	worker := func() {
 		defer waitGroup.Done()
@@ -105,7 +108,7 @@ func (importer ScoresImporter) runWorkerPool() {
 	}
 }
 
-func (importer ScoresImporter) executeImportTask(task ImportTask) (err error) {
+func (importer *ScoresImporter) executeImportTask(task ImportTask) (err error) {
 	var messages []kafka.Message
 	var nextErr error
 	writeMessages := func(threshold int) bool {
@@ -142,6 +145,7 @@ func (importer ScoresImporter) executeImportTask(task ImportTask) (err error) {
 		)
 
 		if err == nil {
+			event.Year = importer.year
 			payload, _ := json.Marshal(event)
 			messages = append(messages, kafka.Message{
 				Key:   []byte(events.ScoreEventName),

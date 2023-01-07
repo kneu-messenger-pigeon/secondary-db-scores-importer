@@ -13,13 +13,13 @@ type MockImporterInterface struct {
 	mock.Mock
 }
 
-// execute provides a mock function with given fields: startDatetime, endDatetime
-func (_m *MockImporterInterface) execute(startDatetime time.Time, endDatetime time.Time) error {
-	ret := _m.Called(startDatetime, endDatetime)
+// execute provides a mock function with given fields: startDatetime, endDatetime, year
+func (_m *MockImporterInterface) execute(startDatetime time.Time, endDatetime time.Time, year int) error {
+	ret := _m.Called(startDatetime, endDatetime, year)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(time.Time, time.Time) error); ok {
-		r0 = rf(startDatetime, endDatetime)
+	if rf, ok := ret.Get(0).(func(time.Time, time.Time, int) error); ok {
+		r0 = rf(startDatetime, endDatetime, year)
 	} else {
 		r0 = ret.Error(0)
 	}

@@ -14,12 +14,14 @@ import (
 func TestSendSecondaryDbScoreProcessedEvent(t *testing.T) {
 	previousDatetime := time.Date(2023, 9, 1, 4, 0, 0, 0, time.Local)
 	currentDatetime := time.Date(2023, 9, 2, 4, 0, 0, 0, time.Local)
+	year := 2030
 
 	expectedError := errors.New("some error")
 
 	payload, _ := json.Marshal(events.SecondaryDbScoreProcessedEvent{
 		CurrentSecondaryDatabaseDatetime:  currentDatetime,
 		PreviousSecondaryDatabaseDatetime: previousDatetime,
+		Year:                              year,
 	})
 
 	expectedMessage := kafka.Message{
@@ -30,6 +32,7 @@ func TestSendSecondaryDbScoreProcessedEvent(t *testing.T) {
 	origEvent := events.SecondaryDbLessonProcessedEvent{
 		CurrentSecondaryDatabaseDatetime:  currentDatetime,
 		PreviousSecondaryDatabaseDatetime: previousDatetime,
+		Year:                              year,
 	}
 
 	t.Run("Success send", func(t *testing.T) {

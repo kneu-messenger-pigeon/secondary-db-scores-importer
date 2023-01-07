@@ -15,7 +15,7 @@ const ExitCodeMainError = 1
 const dateFormat = "2006-01-02 15:04:05"
 
 type ImporterInterface interface {
-	execute(startDatetime time.Time, endDatetime time.Time) error
+	execute(startDatetime time.Time, endDatetime time.Time, year int) error
 }
 
 func main() {

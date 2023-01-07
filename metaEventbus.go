@@ -19,6 +19,7 @@ func (metaEventbus MetaEventbus) sendSecondaryDbScoreProcessedEvent(origEvent ev
 	event := events.SecondaryDbScoreProcessedEvent{
 		CurrentSecondaryDatabaseDatetime:  origEvent.CurrentSecondaryDatabaseDatetime,
 		PreviousSecondaryDatabaseDatetime: origEvent.PreviousSecondaryDatabaseDatetime,
+		Year:                              origEvent.Year,
 	}
 
 	payload, _ := json.Marshal(event)

@@ -62,10 +62,12 @@ func TestImporterExecute(t *testing.T) {
 				DisciplineId: 99,
 				Year:         year,
 				Semester:     uint8(rand.Intn(2) + 1),
-				IsAbsent:     false,
-				IsDeleted:    i%7 == 3,
-				UpdatedAt:    updatedAt,
-				SyncedAt:     syncedAtRewrite,
+				ScoreValue: events.ScoreValue{
+					IsAbsent:  false,
+					IsDeleted: i%7 == 3,
+				},
+				UpdatedAt: updatedAt,
+				SyncedAt:  syncedAtRewrite,
 			}
 
 			if i%5 == 0 {

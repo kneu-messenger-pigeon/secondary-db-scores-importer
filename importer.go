@@ -43,6 +43,8 @@ func (importer *ScoresImporter) execute(startDatetime time.Time, endDatetime tim
 		return
 	}
 
+	fmt.Fprintf(importer.out, "Start score. Daterange %v - %v. \n", startDatetime, endDatetime)
+
 	startedAt := time.Now()
 
 	importer.year = year
@@ -103,6 +105,7 @@ func (importer *ScoresImporter) runWorkerPool() {
 		close(importer.queueError)
 	}()
 
+	fmt.Fprintf(importer.out, "Run %d workers\n", importer.workerPoolSize)
 	for i := 0; i < importer.workerPoolSize; i++ {
 		go worker()
 	}

@@ -37,7 +37,7 @@ func loadConfig(envFilename string) (Config, error) {
 	}
 
 	workerPoolSize, err := strconv.Atoi(os.Getenv("WORKER_POOL_SIZE"))
-	if workerPoolSize == 0 || err != nil {
+	if workerPoolSize <= 0 || err != nil {
 		workerPoolSize = 4
 	}
 

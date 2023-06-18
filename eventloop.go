@@ -52,6 +52,7 @@ func (eventLoop EventLoop) execute() (err error) {
 			}
 		}
 
+		fmt.Fprintf(eventLoop.out, "Message %s processed - error: %v \n", string(m.Key), err)
 		if err == nil {
 			err = eventLoop.reader.CommitMessages(context.Background(), m)
 		}

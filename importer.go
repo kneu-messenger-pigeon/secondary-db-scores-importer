@@ -33,7 +33,10 @@ const ScoreQuery = `SELECT ID, ID_OBJ AS STUDENT_ID,
 	XI_2 AS LESSON_ID, XI_4 as LESSON_PART,
 	ID_T_PD_CMS AS DISCIPLINE_ID, XI_5 as SEMESTER, 
 	COALESCE(XR_1, 0) AS SCORE, IIF(XS10_4 IS NULL, 0, 1) AS IS_ABSENT,
-	REGDATE, (XS10_5 != 'Так' OR (XR_1 IS NULL AND XS10_4 IS NULL)) AS IS_DELETED
+	REGDATE,
+	( case XS10_5
+        when 'Так' then case COALESCE(XR_1, XS10_4, 'NULL') when 'NULL' then 1 else 0 end
+        else 1 end ) AS IS_DELETED
 FROM T_EV_9
 WHERE  REGDATE BETWEEN ? AND ?
 ORDER BY ID DESC`
@@ -43,7 +46,10 @@ func (importer *ScoresImporter) execute(startDatetime time.Time, endDatetime tim
 		return
 	}
 
-	fmt.Fprintf(importer.out, "Start score. Daterange %v - %v. \n", startDatetime, endDatetime)
+	fmt.Fprintf(
+		importer.out, "Start score. Daterange %s - %s. \n",
+		startDatetime.Format(dateFormat), endDatetime.Format(dateFormat),
+	)
 
 	startedAt := time.Now()
 
@@ -69,31 +75,38 @@ func (importer *ScoresImporter) prepareImportTaskQueue(startDatetime time.Time, 
 	chunkEndDatetime := endDatetime
 	var chunkStartDatetime time.Time
 
+	taskCount := int8(0)
 	for startDatetime.Before(chunkEndDatetime) {
 		chunkStartDatetime = chunkEndDatetime.Add(-importer.chunkInterval + time.Second)
 		if startDatetime.After(chunkStartDatetime) || chunkStartDatetime.Sub(startDatetime) < time.Minute*30 {
 			chunkStartDatetime = startDatetime
 		}
 
+		taskCount++
 		importer.queue <- ImportTask{
 			startDatetime: chunkStartDatetime,
 			endDatetime:   chunkEndDatetime,
 		}
 		chunkEndDatetime = chunkStartDatetime.Add(-time.Second)
 	}
+	fmt.Fprintf(importer.out, "Prepared %d import tasks \n", taskCount)
 
 	close(importer.queue)
 }
 
 func (importer *ScoresImporter) runWorkerPool() {
 	waitGroup := &sync.WaitGroup{}
+	errorHappened := false
 	worker := func() {
 		defer waitGroup.Done()
 		for task := range importer.queue {
 			err := importer.executeImportTask(task)
 			if err != nil {
-				waitGroup.Add(0)
 				importer.queueError <- err
+				errorHappened = true
+			}
+
+			if errorHappened {
 				break
 			}
 		}
@@ -126,6 +139,7 @@ func (importer *ScoresImporter) executeImportTask(task ImportTask) (err error) {
 	}
 	rows, err := importer.db.Query(ScoreQuery, task.startDatetime.Format(dateFormat), task.endDatetime.Format(dateFormat))
 	if err != nil {
+		fmt.Fprintf(importer.out, "Score query error %s \n", err.Error())
 		return
 	}
 	defer rows.Close()

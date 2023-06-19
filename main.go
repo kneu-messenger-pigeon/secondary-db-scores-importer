@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/kneu-messenger-pigeon/events"
 	_ "github.com/nakagami/firebirdsql"
 	"github.com/segmentio/kafka-go"
 	"io"
@@ -41,7 +42,7 @@ func runApp(out io.Writer) error {
 	metaEventbus := &MetaEventbus{
 		writer: &kafka.Writer{
 			Addr:     kafka.TCP(config.kafkaHost),
-			Topic:    "meta_events",
+			Topic:    events.MetaEventsTopic,
 			Balancer: &kafka.LeastBytes{},
 		},
 	}
@@ -51,7 +52,7 @@ func runApp(out io.Writer) error {
 		db:  db,
 		writer: &kafka.Writer{
 			Addr:     kafka.TCP(config.kafkaHost),
-			Topic:    "raw_scores",
+			Topic:    events.RawScoresTopic,
 			Balancer: &kafka.LeastBytes{},
 		},
 		chunkInterval:  time.Hour * 8,
@@ -67,7 +68,7 @@ func runApp(out io.Writer) error {
 			kafka.ReaderConfig{
 				Brokers:     []string{config.kafkaHost},
 				GroupID:     "secondary-db-scores-importer",
-				Topic:       "meta_events",
+				Topic:       events.MetaEventsTopic,
 				MinBytes:    10,
 				MaxBytes:    10e3,
 				MaxWait:     time.Second,

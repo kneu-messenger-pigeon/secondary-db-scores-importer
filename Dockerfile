@@ -1,6 +1,6 @@
 ARG GO_VERSION=${GO_VERSION:-1.19}
 
-FROM golang:${GO_VERSION}-alpine AS builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64}  golang:${GO_VERSION}-alpine AS builder
 ARG REPOSITORY_NAME=${REPOSITORY_NAME:-app}
 
 RUN apk update && apk add --no-cache git
@@ -18,7 +18,7 @@ RUN cat /etc/passwd | grep nobody > /etc/passwd.nobody
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -tags=nomsgpack -o /${REPOSITORY_NAME} .
 
 # build a small image
-FROM alpine
+FROM --platform=${BUILDPLATFORM:-linux/amd64}  alpine
 
 ENV TZ=Europe/Kyiv
 RUN apk add tzdata
@@ -32,3 +32,4 @@ COPY --from=builder /${REPOSITORY_NAME} /${REPOSITORY_NAME}
 # Run
 USER nobody
 ENTRYPOINT ["{${REPOSITORY_NAME}"]
+

@@ -1,0 +1,2 @@
+[![Release](https://github.com/kneu-messenger-pigeon/secondary-db-scores-importer/actions/workflows/release.yaml/badge.svg)](https://github.com/kneu-messenger-pigeon/secondary-db-scores-importer/actions/workflows/release.yaml)
+[![codecov](https://codecov.io/gh/kneu-messenger-pigeon/secondary-db-scores-importer/branch/main/graph/badge.svg?token=GFH2336CCW)](https://codecov.io/gh/kneu-messenger-pigeon/secondary-db-scores-importer)

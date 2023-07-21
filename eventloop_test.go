@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/kneu-messenger-pigeon/events"
+	"github.com/kneu-messenger-pigeon/events/mocks"
 	"github.com/segmentio/kafka-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -40,7 +41,7 @@ func TestEventLoopExecute(t *testing.T) {
 		metaEventbus := NewMockMetaEventbusInterface(t)
 		metaEventbus.On("sendSecondaryDbScoreProcessedEvent", event).Return(nil)
 
-		reader := events.NewMockReaderInterface(t)
+		reader := mocks.NewReaderInterface(t)
 		reader.On("FetchMessage", matchContext).Return(message, nil).Once()
 		reader.On("FetchMessage", matchContext).Return(kafka.Message{}, breakLoopError)
 		reader.On("CommitMessages", matchContext, message).Return(nil)
@@ -69,7 +70,7 @@ func TestEventLoopExecute(t *testing.T) {
 		metaEventbus := NewMockMetaEventbusInterface(t)
 		metaEventbus.On("sendSecondaryDbScoreProcessedEvent", event).Return(nil)
 
-		reader := events.NewMockReaderInterface(t)
+		reader := mocks.NewReaderInterface(t)
 		reader.On("FetchMessage", matchContext).Return(message, nil).Once()
 		reader.On("CommitMessages", matchContext, message).Return(expectedError)
 
@@ -99,7 +100,7 @@ func TestEventLoopExecute(t *testing.T) {
 	t.Run("process one valid message with error on importer execute", func(t *testing.T) {
 		metaEventbus := NewMockMetaEventbusInterface(t)
 
-		reader := events.NewMockReaderInterface(t)
+		reader := mocks.NewReaderInterface(t)
 		reader.On("FetchMessage", matchContext).Return(message, nil).Once()
 
 		importer := NewMockImporterInterface(t)
@@ -135,7 +136,7 @@ func TestEventLoopExecute(t *testing.T) {
 			Value: payload,
 		}
 
-		reader := events.NewMockReaderInterface(t)
+		reader := mocks.NewReaderInterface(t)
 
 		reader.On("FetchMessage", matchContext).Return(message, nil).Once()
 		reader.On("FetchMessage", matchContext).Return(kafka.Message{}, breakLoopError)
@@ -173,7 +174,7 @@ func TestEventLoopExecute(t *testing.T) {
 
 		metaEventbus := NewMockMetaEventbusInterface(t)
 
-		reader := events.NewMockReaderInterface(t)
+		reader := mocks.NewReaderInterface(t)
 
 		reader.On("FetchMessage", matchContext).Return(message, nil).Once()
 		reader.On("FetchMessage", matchContext).Return(kafka.Message{}, breakLoopError)

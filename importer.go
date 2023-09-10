@@ -39,7 +39,7 @@ const ScoreQuery = `SELECT ID, ID_OBJ AS STUDENT_ID,
         else 1 end ) AS IS_DELETED
 FROM T_EV_9
 WHERE  REGDATE BETWEEN ? AND ?
-ORDER BY ID_OBJ, XI_2, XI_4 DESC`
+ORDER BY ID_OBJ, XI_2, XI_4 ASC`
 
 func (importer *ScoresImporter) execute(startDatetime time.Time, endDatetime time.Time, year int) (err error) {
 	if err = importer.db.Ping(); err != nil {

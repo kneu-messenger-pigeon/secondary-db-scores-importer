@@ -67,8 +67,9 @@ func TestImporterExecute(t *testing.T) {
 					IsAbsent:  false,
 					IsDeleted: i%7 == 3,
 				},
-				UpdatedAt: updatedAt,
-				SyncedAt:  syncedAtRewrite,
+				UpdatedAt:   updatedAt,
+				SyncedAt:    syncedAtRewrite,
+				ScoreSource: events.Secondary,
 			}
 
 			if i%5 == 0 {

@@ -29,6 +29,7 @@ type ImportTask struct {
 	endDatetime   time.Time
 }
 
+// ScoreQuery uses `UNIQUE INDEX UNQ1_T_EV_9 ON T_EV_9 (ID_OBJ, XI_2, XI_4)` to have sequential student-score in result
 const ScoreQuery = `SELECT ID, ID_OBJ AS STUDENT_ID,
 	XI_2 AS LESSON_ID, XI_4 as LESSON_PART,
 	ID_T_PD_CMS AS DISCIPLINE_ID, XI_5 as SEMESTER, 
@@ -150,6 +151,10 @@ func (importer *ScoresImporter) executeImportTask(task ImportTask) (err error) {
 	)
 	var event events.ScoreEvent
 	event.SyncedAt = time.Now()
+	event.ScoreSource = events.Secondary
+	message := kafka.Message{
+		Key: []byte(events.ScoreEventName),
+	}
 	i := 0
 	for rows.Next() && writeMessages(importer.writeThreshold) {
 		i++
@@ -163,11 +168,8 @@ func (importer *ScoresImporter) executeImportTask(task ImportTask) (err error) {
 
 		if err == nil {
 			event.Year = importer.year
-			payload, _ := json.Marshal(event)
-			messages = append(messages, kafka.Message{
-				Key:   []byte(events.ScoreEventName),
-				Value: payload,
-			})
+			message.Value, _ = json.Marshal(event)
+			messages = append(messages, message)
 		}
 	}
 	if err == nil && rows.Err() != nil {

@@ -39,7 +39,8 @@ const ScoreQuery = `SELECT ID, ID_OBJ AS STUDENT_ID,
         when 'Так' then case COALESCE(XR_1, XS10_4, 'NULL') when 'NULL' then 1 else 0 end
         else 1 end ) AS IS_DELETED
 FROM T_EV_9
-WHERE  REGDATE BETWEEN ? AND ?
+WHERE  REGDATE BETWEEN ? AND ? 
+  AND ID_T_PD_CMS IS NOT NULL
 ORDER BY ID_OBJ, XI_2, XI_4 ASC`
 
 func (importer *ScoresImporter) execute(startDatetime time.Time, endDatetime time.Time, year int) (err error) {

@@ -13,6 +13,8 @@ github.com/klauspost/compress v1.17.10 h1:oXAz+Vh0PMUvJczoi+flxpnBEPxoER1IaAnU/N
 github.com/klauspost/compress v1.17.10/go.mod h1:pMDklpSncoRMuLFrf1W9Ss9KT+0rH90U12bZKk7uwG0=
 github.com/kneu-messenger-pigeon/events v0.1.41 h1:Yzzp7oyVArzKzzI93HmLX+k3lUn8E3dKUk9uNF3le+8=
 github.com/kneu-messenger-pigeon/events v0.1.41/go.mod h1:Q6X8B9gKZpKbby9gisLumvGT1xCWBM7bAFnviYi6MBQ=
+github.com/kneu-messenger-pigeon/events v0.1.42 h1:j8/EmXCQjI+67zthfpj1eCDe3Vk+WO1/rNi3eZAFgEA=
+github.com/kneu-messenger-pigeon/events v0.1.42/go.mod h1:k9YDb2vzc9gzKqGxYPpZRV7Uiuztfbo5/q29CsbrX1U=
 github.com/nakagami/firebirdsql v0.9.11 h1:ogohEt5J+w9BX6R+sAxBtC73ZCrLcdz7xs+LjxVld0o=
 github.com/nakagami/firebirdsql v0.9.11/go.mod h1:DufJ6yEj8NufW115piHPR4JVcWJEGDN3Swe1xQJRZDU=
 github.com/pierrec/lz4/v4 v4.1.15/go.mod h1:gZWDp/Ze/IJXGXf23ltt2EXimqmTUXEy0GFuRQyBid4=
